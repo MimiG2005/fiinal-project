@@ -5,6 +5,8 @@ import PendingOrders from './PendingOrders';
 import ApprovedOrders from './ApprovedOrders';
 import OrdersHistory from './OrdersHistory';
 import UpdateProfile from './UpdateProfile';
+import { useContext } from 'react';
+import { userContext } from '../context/userContext';
 
 export default function ProviderPage() {
   const [activeTab, setActiveTab] = useState('pending');
