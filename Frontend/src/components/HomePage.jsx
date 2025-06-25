@@ -1,30 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 
-const HomePage = ({ currentUser }) => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const [user, setUser] = useState(currentUser);
+import '../styles/HomePage.css';
+import { userContext } from '../context/userContext';
+import { EventContext } from '../context/eventContext';
 
-    useEffect(() => {
-        // אם currentUser לא קיים ננסה לשלוף מה-localStorage
-        if (!user) {
-            const savedUserId = localStorage.getItem('userId');
-            if (savedUserId && savedUserId === id) {
-                // אם צריך – ניתן לבצע כאן fetch נוסף מהשרת לקבלת פרטי המשתמש
-                setUser({ id: savedUserId, full_name: 'משתמש שמור' });
-            } else {
-                navigate('/');
-            }
-        }
-    }, [id, user, navigate]);
+const HomePage = () => {
 
-    return (
-        <div style={{ padding: '2rem' }}>
-            <h1>ברוך הבא{user?.full_name ? `, ${user.full_name}` : ''}!</h1>
-            <p>זהו עמוד הבית שלך.</p>
-        </div>
-    );
+  const navigate = useNavigate();
+  const { currentUser, handleLogout } = useContext(userContext);
+  const { selectedEvent } = useContext(EventContext);
+
+
+  const { pathname } = useLocation();
+  let activeTab = pathname.split('/')[pathname.split('/').length - 1];
+
+
+
+
+  return (
+    <div className="home-container">
+      <header className="navbar">
+        <h1 className="logo">Event Manager</h1>
+        <div>{currentUser ? <span>ברוך/ה שבאת</span> : <div>מא להקקש</div>}</div>
+        <nav className="nav-buttons">
+          <button
+            onClick={() => navigate('create')}
+            className={`nav-button ${activeTab === 'create' ? 'active' : ''}`}
+          >
+            הוספת אירוע
+          </button>
+          <button
+            onClick={() => navigate('view')}
+            className={`nav-button ${activeTab === 'view' ? 'active' : ''}`}
+          >
+            צפייה באירועים
+          </button>
+          <button
+            onClick={() => navigate('current')}
+            disabled={!selectedEvent}
+            className={`nav-button ${activeTab === 'current' ? 'active' : ''}`}
+          >
+            אירוע נוכחי
+          </button>
+          <button
+            onClick={handleLogout}
+            className="nav-button logout-button"
+            style={{ marginRight: 'auto', backgroundColor: '#d9534f', color: 'white' }}
+          >
+            התנתקות
+          </button>
+        </nav>
+
+      </header>
+
+      <main className="content-area">
+        <Outlet />
+      </main>
+    </div>
+  );
 };
 
 export default HomePage;

@@ -1,0 +1,27 @@
+.provider-navbar {
+  display: flex;
+  gap: 10px;
+  background: #eee;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.provider-content {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+
+.provider-navbar button {
+  background-color: #fff;
+  border: 1px solid #888;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.provider-navbar button:hover {
+  background-color: #ddd;
+}

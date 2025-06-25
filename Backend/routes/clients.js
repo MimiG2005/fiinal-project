@@ -1,17 +1,6 @@
-
-// import express from 'express';
-// import clientController from '../controllers/clientsController.js';
-
-// const router = express.Router();
-
-// router.get('/', clientController.getAllClients);
-// router.post('/', clientController.createClient);
-
-// export default router;
-
-// routes/clients.js
 import express from 'express';
-import clientController from '../controllers/clientsController.js'; // ודא/י שהנתיב לקובץ ה-controller נכון
+import clientController from '../controllers/clients.js'; // ודא/י שהנתיב לקובץ ה-controller נכון
+import { authorizeRole } from '../middleware/verifyToken.js';
 
 const router = express.Router();
 
