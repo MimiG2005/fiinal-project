@@ -52,7 +52,7 @@ export const QueryCreateClient = (client) => {
                 } else {
                     console.log(result);
                     resolve(result);
-                }
+                    }
             }
         );
     });

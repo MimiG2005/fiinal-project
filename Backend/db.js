@@ -23,7 +23,7 @@ import mysql from 'mysql2';
 export var con = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'Mimigins2005**', // שימי כאן את הסיסמה שלך
+  password: 'Mimigins2005**', 
   database: 'eventify_db'
 });
 

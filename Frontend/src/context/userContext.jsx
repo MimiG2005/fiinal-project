@@ -15,15 +15,28 @@ const userProvider = ({ children }) => {
             try {
                 const res = await fetch(`http://localhost:3001/api/login/relogin`, {
                     method: "POST",
-                    headers: { Authorization: `Bearer ${token}` }
-                })
+                    headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error('Token invalid');
+      }
                 const data = await res.json()
                 console.log(data);
                 setCurrentUser(data);
             }
+            // catch (err) {
+            //     navigate('/');
+            // }
             catch (err) {
-                navigate('/');
-            }
+      console.log('Relogin failed');
+      localStorage.removeItem('token');
+      setCurrentUser(null);
+      navigate('/');
+    }
             // setCurrentUser({ id: token });
         }
         if (token) {

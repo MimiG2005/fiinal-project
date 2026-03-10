@@ -1,51 +1,36 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/HomePage.css';
-import PendingOrders from './PendingOrders';
-import ApprovedOrders from './ApprovedOrders';
-import OrdersHistory from './OrdersHistory';
-import UpdateProfile from './UpdateProfile';
+
 import { useContext } from 'react';
 import { userContext } from '../context/userContext';
 
 export default function ProviderPage() {
-  const [activeTab, setActiveTab] = useState('pending');
-
+  const { pathname } = useLocation();
+  let activeTab = pathname.split('/')[pathname.split('/').length - 1];
+  
+  const navigate = useNavigate();
   const { currentUser, handleLogout } = useContext(userContext);
 
 
-  
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'pending':
-        return <PendingOrders providerId={currentUser?.id} />;
-      case 'approved':
-        return <ApprovedOrders providerId={currentUser?.id} />; // אם יש קומפוננטה, אפשר להחזיר אותה
-      case 'history':
-        return <OrdersHistory providerId={currentUser?.id} />;
-      case 'update':
-        return <UpdateProfile providerId={currentUser?.id} />;
-      default:
-        return null;
-    }
-  };
+
+
 
   return (
     <div className="home-container">
       <header className="navbar">
         <h2>ברוך הבא ספק {currentUser?.full_name || ''}</h2>
         <nav className="nav-buttons">
-          <button onClick={() => setActiveTab('pending')} className={`nav-button ${activeTab === 'pending' ? 'active' : ''}`}>
+          <button onClick={() => navigate('pending')} className={`nav-button ${activeTab === 'pending' ? 'active' : ''}`}>
             הזמנות בהמתנה
           </button>
-          <button onClick={() => setActiveTab('approved')} className={`nav-button ${activeTab === 'approved' ? 'active' : ''}`}>
+          <button onClick={() => navigate('approved')} className={`nav-button ${activeTab === 'approved' ? 'active' : ''}`}>
             הזמנות מאושרות
           </button>
-          <button onClick={() => setActiveTab('history')} className={`nav-button ${activeTab === 'history' ? 'active' : ''}`}>
+          <button onClick={() => navigate('history')} className={`nav-button ${activeTab === 'history' ? 'active' : ''}`}>
             היסטורית הזמנות
           </button>
-          <button onClick={() => setActiveTab('update')} className={`nav-button ${activeTab === 'update' ? 'active' : ''}`}>
+          <button onClick={() => navigate('update')} className={`nav-button ${activeTab === 'update' ? 'active' : ''}`}>
             עדכון פרטים אישיים
           </button>
           <button onClick={handleLogout} className="nav-button logout-button"
@@ -57,7 +42,7 @@ export default function ProviderPage() {
       </header>
 
       <main className="content-area">
-        {renderContent()}
+        <Outlet />
       </main>
     </div>
   );

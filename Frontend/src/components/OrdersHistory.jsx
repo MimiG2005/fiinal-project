@@ -1,186 +1,163 @@
-import React, { useEffect, useState } from 'react';
+// import React, { useEffect, useState } from 'react';
+// import { useContext } from 'react';
+// import { userContext } from '../context/userContext';
 
-export default function OrdersHistory({ providerId }) {
+// export default function OrdersHistory() {
+//   const [orders, setOrders] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const { currentUser } = useContext(userContext);
+//   useEffect(() => {
+//     if (currentUser) {
+//       async function fetchHistory() {
+
+//         try {
+//           setLoading(true);
+//           const token = localStorage.getItem('token');
+//           const res = await fetch(`http://localhost:3001/api/orders/provider/${currentUser.id}/history`, {
+//             headers: { Authorization: `Bearer ${token}` },
+//           });
+//           if (!res.ok) throw new Error('שגיאה בטעינת היסטוריית ההזמנות');
+//           const data = await res.json();
+//           setOrders(data);
+//         } catch (e) {
+//           setError(e.message);
+//         } finally {
+//           setLoading(false);
+//         }
+//       }
+//       fetchHistory();
+//     }
+//   }, [currentUser]);
+
+//   const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('he-IL');
+
+//   if (loading) return <div>טוען היסטוריה...</div>;
+//   if (error) return <div>שגיאה: {error}</div>;
+//   if (orders.length === 0) return <div>אין הזמנות ישנות</div>;
+
+//   return (
+//     <div>
+//       <h3>היסטוריית הזמנות</h3>
+//       <ul style={{ listStyleType: 'none', padding: 0 }}>
+//         {orders.map(order => (
+//           <li key={order.id} style={{ marginBottom: 12, padding: 12, border: '1px solid #ccc', borderRadius: 8 }}>
+//             <div><strong>תאריך:</strong> {formatDate(order.order_date)}</div>
+//             <div><strong>שעה:</strong> {order.order_time}</div>
+//             <div><strong>מיקום:</strong> {order.location}</div>
+//             <div><strong>מחיר:</strong> {order.total_price} ₪</div>
+//             <div><strong>הערות:</strong> {order.notes || '—'}</div>
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// }
+
+import React, { useEffect, useState, useContext } from 'react';
+import { userContext } from '../context/userContext';
+
+import {
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Box,
+  Divider
+} from '@mui/material';
+
+export default function OrdersHistory() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { currentUser } = useContext(userContext);
 
   useEffect(() => {
-    async function fetchHistory() {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:3001/api/orders/provider/${providerId}/history`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error('שגיאה בטעינת היסטוריית ההזמנות');
-        const data = await res.json();
-        setOrders(data);
-      } catch (e) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    }
+    if (currentUser) {
+      async function fetchHistory() {
+        try {
+          setLoading(true);
 
-    if (providerId) {
+          const token = localStorage.getItem('token');
+
+          const res = await fetch(
+            `http://localhost:3001/api/orders/provider/${currentUser.id}/history`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (!res.ok) throw new Error('שגיאה בטעינת היסטוריית ההזמנות');
+
+          const data = await res.json();
+          setOrders(data);
+        } catch (e) {
+          setError(e.message);
+        } finally {
+          setLoading(false);
+        }
+      }
+
       fetchHistory();
     }
-  }, [providerId]);
+  }, [currentUser]);
 
-  const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('he-IL');
+  const formatDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString('he-IL');
 
-  if (loading) return <div>טוען היסטוריה...</div>;
-  if (error) return <div>שגיאה: {error}</div>;
-  if (orders.length === 0) return <div>אין הזמנות ישנות</div>;
+  if (loading) return <Typography>טוען היסטוריה...</Typography>;
+  if (error) return <Typography color="error">שגיאה: {error}</Typography>;
+  if (orders.length === 0)
+    return <Typography>אין הזמנות ישנות</Typography>;
 
   return (
-    <div>
-      <h3>היסטוריית הזמנות</h3>
-      <ul style={{ listStyleType: 'none', padding: 0 }}>
+    <Box dir="rtl" sx={{ mt: 3 }}>
+      <Typography variant="h5" gutterBottom>
+        היסטוריית הזמנות
+      </Typography>
+
+      <Grid container spacing={3}>
         {orders.map(order => (
-          <li key={order.id} style={{ marginBottom: 12, padding: 12, border: '1px solid #ccc', borderRadius: 8 }}>
-            <div><strong>תאריך:</strong> {formatDate(order.order_date)}</div>
-            <div><strong>שעה:</strong> {order.order_time}</div>
-            <div><strong>מיקום:</strong> {order.location}</div>
-            <div><strong>מחיר:</strong> {order.total_price} ₪</div>
-            <div><strong>הערות:</strong> {order.notes || '—'}</div>
-          </li>
+          <Grid item xs={12} sm={6} md={4} key={order.id}>
+            <Card
+              sx={{
+                height: '100%',
+                borderLeft: '6px solid #9e9e9e'
+              }}
+            >
+              <CardContent>
+
+                <Typography variant="h6" gutterBottom>
+                  הזמנה קודמת
+                </Typography>
+
+                <Divider sx={{ mb: 2 }} />
+
+                <Typography>
+                  <strong>תאריך:</strong> {formatDate(order.order_date)}
+                </Typography>
+
+                <Typography>
+                  <strong>שעה:</strong> {order.order_time}
+                </Typography>
+
+                <Typography>
+                  <strong>מיקום:</strong> {order.location}
+                </Typography>
+
+                <Typography>
+                  <strong>מחיר:</strong> {order.total_price} ₪
+                </Typography>
+
+                <Typography sx={{ mt: 1 }}>
+                  <strong>הערות:</strong> {order.notes || '—'}
+                </Typography>
+
+              </CardContent>
+            </Card>
+          </Grid>
         ))}
-      </ul>
-    </div>
+      </Grid>
+    </Box>
   );
 }
-// import React, { useEffect, useState } from 'react';
-
-// export default function ViewEventsPage({ clientId, onEventSelect }) {
-//   const [events, setEvents] = useState([]);
-//   const [error, setError] = useState('');
-
-//   useEffect(() => {
-//     const fetchEvents = async () => {
-//       try {
-//         const token = localStorage.getItem('token');
-//         const res = await fetch(`http://localhost:3001/api/events/client/${clientId}`, {
-//           headers: { Authorization: `Bearer ${token}` },
-//         });
-//         if (!res.ok) throw new Error('שגיאה בקבלת האירועים');
-//         setEvents(await res.json());
-//       } catch (err) {
-//         setError(err.message || 'שגיאה כללית');
-//       }
-//     };
-//     fetchEvents();
-//   }, [clientId]);
-
-//   const isFutureDate = dateStr => dateStr >= new Date().toISOString().split('T')[0];
-//   const formatDate = dateStr => new Date(dateStr).toLocaleDateString('he-IL');
-
-//   return (
-//     <div>
-//       <h2>רשימת האירועים שלך</h2>
-//       {error && <p style={{ color: 'red' }}>{error}</p>}
-//       {events.length === 0 ? (
-//         <p>אין אירועים להצגה</p>
-//       ) : (
-//         <ul>
-//           {events.map(evt => (
-//             <li key={evt.id} style={{ marginBottom: '1rem', borderBottom: '1px solid #ccc', paddingBottom: '1rem' }}>
-//               <strong>סוג אירוע:</strong> {evt.event_type_name || '—'}<br />
-// <strong>תאריך:</strong> {new Date(evt.event_date).toLocaleDateString('he-IL')}
-//               <strong>מחיר:</strong> {evt.price} ₪<br />
-//               {isFutureDate(evt.event_date) ? (
-//                 <button className="button" onClick={() => onEventSelect(evt)}>
-//                   עדכן אירוע
-//                 </button>
-//               ) : (
-//                 <button className="button" disabled style={{ backgroundColor: '#ccc' }}>
-//                   אירוע עבר
-//                 </button>
-//               )}
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-//     </div>
-//   );
-// }
-
-
-// import React, { useEffect, useState } from 'react';
-
-// export default function ViewEventsPage({ clientId, onEventSelect }) {
-//   const [events, setEvents] = useState([]);
-//   const [error, setError] = useState('');
-
-//   useEffect(() => {
-//     const fetchEvents = async () => {
-//       try {
-//         const token = localStorage.getItem('token');
-//         const res = await fetch(`http://localhost:3001/api/events/client/${clientId}`, {
-//           headers: { Authorization: `Bearer ${token}` },
-//         });
-//         if (!res.ok) throw new Error('שגיאה בקבלת האירועים');
-//         setEvents(await res.json());
-//       } catch (err) {
-//         setError(err.message || 'שגיאה כללית');
-//       }
-//     };
-//     fetchEvents();
-//   }, [clientId]);
-
-//   // פונקציה לעיצוב תאריך
-// //   const formatDate = (dateStr) =>
-// //     new Date(dateStr).toLocaleDateString('he-IL', {
-// //       day: '2-digit',
-// //       month: '2-digit',
-// //       year: 'numeric',
-// //     });
-// const formatDate = (dateStr) => {
-//   const date = new Date(dateStr);
-//   if (isNaN(date.getTime())) return 'תאריך לא תקין';
-//   return date.toLocaleDateString('he-IL', {
-//     day: '2-digit',
-//     month: '2-digit',
-//     year: 'numeric',
-//   });
-// };
-
-//   const isFutureDate = (dateStr) => dateStr >= new Date().toISOString().split('T')[0];
-
-//   return (
-//     <div>
-//       <h2>רשימת האירועים שלך</h2>
-//       {error && <p style={{ color: 'red' }}>{error}</p>}
-//       {events.length === 0 ? (
-//         <p>אין אירועים להצגה</p>
-//       ) : (
-//         <ul>
-//           {events.map((evt) => (
-//             <li
-//               key={evt.id}
-//               style={{
-//                 marginBottom: '1rem',
-//                 borderBottom: '1px solid #ccc',
-//                 paddingBottom: '1rem',
-//               }}
-//             >
-//               <strong>סוג אירוע:</strong> {evt.event_type_name || '—'}<br />
-//               <strong>תאריך:</strong> {formatDate(evt.event_date)}<br />
-//               <strong>מחיר:</strong> {evt.price} ₪<br />
-//               {isFutureDate(evt.event_date) ? (
-//                 <button className="button" onClick={() => onEventSelect(evt)}>
-//                   עדכן אירוע
-//                 </button>
-//               ) : (
-//                 <button className="button" disabled style={{ backgroundColor: '#ccc' }}>
-//                   אירוע עבר
-//                 </button>
-//               )}
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-//     </div>
-//   );
-// }

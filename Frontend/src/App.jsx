@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
 import HomePage from './components/HomePage';
@@ -11,6 +11,10 @@ import AdminsList from './components/AdminsList';
 import OrdersList from './components/OrdersList';
 import CurrentEventPage from './components/CurrentEventPage';
 import ViewEventsPage from './components/ViewEventsPage';
+import OrdersHistory from './components/OrdersHistory';
+import PendingOrders from './components/PendingOrders';
+import ApprovedOrders from './components/ApprovedOrders';
+import UpdateProfile from './components/UpdateProfile';
 
 function App() {
 
@@ -41,7 +45,13 @@ function App() {
             </Route>
 
 
-            <Route path="/provider/:id" element={<ProviderPage />} />
+            <Route path="/provider/:id" element={<ProviderPage />} >
+                <Route path='pending' element={<PendingOrders />} />
+                <Route path='approved' element={<ApprovedOrders />} />
+                <Route path='history' element={<OrdersHistory />} />
+                <Route path='update' element={<UpdateProfile />} />
+
+            </Route>
 
             <Route
                 path="/create-event/:clientId"

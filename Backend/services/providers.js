@@ -19,6 +19,7 @@ export const QueryGetProviderById = (id) => {
 };
 
 export const QueryCreateProvider = (provider) => {
+  console.log(provider)
   const { full_name, email, password, phone, address, service_type_id } = provider;
   return new Promise((resolve, reject) => {
     const sql = `
@@ -104,6 +105,37 @@ export const QuaryGetProvidersByServiceType = async (serviceTypeId) => {
     return rows;
   } catch (err) {
     console.error('שגיאה ב־service:', err);
+    throw err;
+  }
+};
+export const QueryGetEventProvidersByClient = async (eventId, clientId) => {
+  try {
+    const result = await db.query(
+      `
+      SELECT 
+        p.id,
+        p.full_name,
+        p.email,
+        p.phone,
+        COALESCE(p.address, '') AS address
+      FROM orders o
+      JOIN providers p ON o.provider_id = p.id
+      WHERE o.event_id = $1 AND o.client_id = $2
+      GROUP BY p.id, p.full_name, p.email, p.phone, p.address
+      `,
+      [eventId, clientId]
+    );
+
+    // ממפה את השורות למבנה נוח
+    return result.rows.map(p => ({
+      id: p.id,
+      name: p.full_name,
+      email: p.email,
+      phone: p.phone,
+      address: p.address
+    }));
+  } catch (err) {
+    console.error('Error fetching event providers:', err);
     throw err;
   }
 };

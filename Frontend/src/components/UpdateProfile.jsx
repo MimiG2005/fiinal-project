@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/providers/UpdateProfile.css';
+import { useContext } from 'react';
+import { userContext } from '../context/userContext';
+import { useCallback } from 'react';
 
-export default function UpdateProfile({ providerId }) {
+export default function UpdateProfile() {
   const [providerData, setProviderData] = useState({
     full_name: '',
     email: '',
@@ -11,27 +14,30 @@ export default function UpdateProfile({ providerId }) {
 
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const { currentUser } = useContext(userContext);
+  console.log(currentUser);
 
-  useEffect(() => {
-    async function fetchProviderData() {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:3001/api/providers/${providerId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+  const fetchProviderData = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:3001/api/providers/${currentUser.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-        if (!res.ok) throw new Error('שגיאה בטעינת פרטי הספק');
-        const data = await res.json();
-        setProviderData(data);
-      } catch (e) {
-        setMessage('אירעה שגיאה: ' + e.message);
-      } finally {
-        setLoading(false);
-      }
+      if (!res.ok) throw new Error('שגיאה בטעינת פרטי הספק');
+      const data = await res.json();
+      setProviderData(data);
+    } catch (e) {
+      setMessage('אירעה שגיאה: ' + e.message);
+    } finally {
+      setLoading(false);
     }
-
-    if (providerId) fetchProviderData();
-  }, [providerId]);
+  }, [currentUser]);
+  useEffect(() => {
+    if (currentUser) {
+      fetchProviderData();
+    }
+  }, [currentUser]);
 
   const handleChange = (e) => {
     setProviderData({
@@ -43,7 +49,7 @@ export default function UpdateProfile({ providerId }) {
   const handleSave = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3001/api/providers/${providerId}`, {
+      const res = await fetch(`http://localhost:3001/api/providers/${currentUser.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

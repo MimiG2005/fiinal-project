@@ -106,7 +106,7 @@ export const QueryDeleteOrder = (id) => {
 export const QueryPendingOrdersByProviderId = (providerId, statusId) => {
   return new Promise((resolve, reject) => {
     con.query(
-      `SELECT * FROM orders WHERE provider_id = ? AND status_id = ?`,
+      `SELECT * FROM orders WHERE provider_id = ? AND status_id = ? AND order_date >= CURDATE()  `,
       [providerId, statusId],
       (err, result) => {
         if (err) reject(err);

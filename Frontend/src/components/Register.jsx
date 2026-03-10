@@ -1,8 +1,83 @@
+// import React, { useContext, useState } from 'react';
+// import { useNavigate, Link } from 'react-router-dom';
+// import { RegisterClient } from '../services/register';
+// import '../styles/Login.css'; // השתמשי באותו CSS לעיצוב אחיד
+// import { userContext } from '../context/userContext';
+
+// export default function Register() {
+//   const [client, setClient] = useState({
+//     full_name: '',
+//     email: '',
+//     password: '',
+//     address: '',
+//     phone: '',
+//   });
+
+//   const [errorMessage, setErrorMessage] = useState('');
+//   const navigate = useNavigate();
+//   const { setCurrentUser } = useContext(userContext);
+
+//   const handleChange = (e) => {
+//     setClient({ ...client, [e.target.name]: e.target.value });
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     try {
+//       const result = await RegisterClient(client);
+//       if (result && result.id) {
+//         // localStorage.setItem('userId', JSON.stringify(result.id));
+//         localStorage.setItem('token', result.token);  // הוספת שמירת הטוקן
+//         setCurrentUser(result);
+//         navigate(`/${result.id}/home`);
+
+//       } else {
+//         setErrorMessage('אירעה שגיאה בהרשמה.');
+//       }
+//     } catch (err) {
+//       console.error(err);
+//       setErrorMessage('ההרשמה נכשלה. ייתכן שהאימייל כבר קיים.');
+//     }
+//   };
+
+//   return (
+//     <div className="container">
+//       <form onSubmit={handleSubmit} className="form">
+//         <h2 className="title">הרשמה</h2>
+
+//         <label className="label">שם מלא</label>
+//         <input className="input" name="full_name" value={client.full_name} onChange={handleChange} required />
+
+//         <label className="label">אימייל</label>
+//         <input className="input" name="email" type="email" value={client.email} onChange={handleChange} required />
+
+//         <label className="label">סיסמה</label>
+//         <input className="input" name="password" type="password" value={client.password} onChange={handleChange} required />
+
+//         <label className="label">כתובת</label>
+//         <input className="input" name="address" value={client.address} onChange={handleChange} />
+
+//         <label className="label">טלפון</label>
+//         <input className="input" name="phone" value={client.phone} onChange={handleChange} />
+
+//         <button type="submit" className="button">הרשמה</button>
+
+//         <Link to="/" className="link">יש לך חשבון? התחבר</Link>
+
+//         {errorMessage && <p className="error">{errorMessage}</p>}
+//       </form>
+//     </div>
+//   );
+// }
+
+
 import React, { useContext, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { RegisterClient } from '../services/register';
-import '../styles/Login.css'; // השתמשי באותו CSS לעיצוב אחיד
 import { userContext } from '../context/userContext';
+
+// MUI imports
+import { Box, Button, TextField, Typography, Alert } from '@mui/material';
 
 export default function Register() {
   const [client, setClient] = useState({
@@ -12,7 +87,6 @@ export default function Register() {
     address: '',
     phone: '',
   });
-
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const { setCurrentUser } = useContext(userContext);
@@ -26,11 +100,9 @@ export default function Register() {
     try {
       const result = await RegisterClient(client);
       if (result && result.id) {
-        localStorage.setItem('userId', JSON.stringify(result.id));
-        localStorage.setItem('token', result.token);  // הוספת שמירת הטוקן
+        localStorage.setItem('token', result.token); 
         setCurrentUser(result);
         navigate(`/${result.id}/home`);
-
       } else {
         setErrorMessage('אירעה שגיאה בהרשמה.');
       }
@@ -41,31 +113,74 @@ export default function Register() {
   };
 
   return (
-    <div className="container">
-      <form onSubmit={handleSubmit} className="form">
-        <h2 className="title">הרשמה</h2>
+    <Box
+      sx={{
+        width: 400,
+        mx: 'auto',
+        mt: 10,
+        p: 4,
+        border: '1px solid #ccc',
+        borderRadius: 2,
+        boxShadow: 3,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+      }}
+    >
+      <Typography variant="h4" align="center">הרשמה</Typography>
 
-        <label className="label">שם מלא</label>
-        <input className="input" name="full_name" value={client.full_name} onChange={handleChange} required />
+      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
 
-        <label className="label">אימייל</label>
-        <input className="input" name="email" type="email" value={client.email} onChange={handleChange} required />
+      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField
+          label="שם מלא"
+          name="full_name"
+          value={client.full_name}
+          onChange={handleChange}
+          required
+          fullWidth
+        />
+        <TextField
+          label="אימייל"
+          type="email"
+          name="email"
+          value={client.email}
+          onChange={handleChange}
+          required
+          fullWidth
+        />
+        <TextField
+          label="סיסמה"
+          type="password"
+          name="password"
+          value={client.password}
+          onChange={handleChange}
+          required
+          fullWidth
+        />
+        <TextField
+          label="כתובת"
+          name="address"
+          value={client.address}
+          onChange={handleChange}
+          fullWidth
+        />
+        <TextField
+          label="טלפון"
+          name="phone"
+          value={client.phone}
+          onChange={handleChange}
+          fullWidth
+        />
 
-        <label className="label">סיסמה</label>
-        <input className="input" name="password" type="password" value={client.password} onChange={handleChange} required />
+        <Button type="submit" variant="contained" color="primary" fullWidth>
+          הרשמה
+        </Button>
+      </Box>
 
-        <label className="label">כתובת</label>
-        <input className="input" name="address" value={client.address} onChange={handleChange} />
-
-        <label className="label">טלפון</label>
-        <input className="input" name="phone" value={client.phone} onChange={handleChange} />
-
-        <button type="submit" className="button">הרשמה</button>
-
-        <Link to="/" className="link">יש לך חשבון? התחבר</Link>
-
-        {errorMessage && <p className="error">{errorMessage}</p>}
-      </form>
-    </div>
+      <Typography align="center">
+        <Link to="/" style={{ textDecoration: 'none' }}>יש לך חשבון? התחבר</Link>
+      </Typography>
+    </Box>
   );
 }

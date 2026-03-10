@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import { findUserByEmail, findUserById } from '../services/login.js';
 
 export const login = async (req, res) => {
@@ -11,11 +12,12 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // const isPasswordMatch = await bcrypt.compare(password, user.password);
+const isMatch = await bcrypt.compare(password, user.password);
 
-    // if (!isPasswordMatch) {
-    //   return res.status(401).json({ message: 'Invalid email or password' });
-    // }
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
 
     const token = jwt.sign(
       { id: user.id, role: user.role },
@@ -23,12 +25,15 @@ export const login = async (req, res) => {
       { expiresIn: '30m' }
     );
 
+      // חשוב – לא להחזיר סיסמה
+    delete user.password;
+
+
+
     res.status(200).json({
       message: 'Login successful',
       token,
-      role: user.role,
-      userId: user.id,
-      fullName: user.full_name
+     ...user
     });
   } catch (err) {
     console.error('Login error:', err);
